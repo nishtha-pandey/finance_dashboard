@@ -2,7 +2,7 @@
 
 @layer base {
   body {
-    @apply bg-slate-900 text-slate-100;
+    @apply bg-slate-900 text-slate-100 antialiased;
   }
 }
 
@@ -20,4 +20,54 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #475569; 
+}
+
+/* Custom Micro-Animations */
+@keyframes slideUpFade {
+  from { 
+    opacity: 0; 
+    transform: translateY(12px) scale(0.98); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+  }
+}
+
+.animate-slide-up {
+  opacity: 0;
+  animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Staggered delay utility classes for list elements */
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+
+/* Subtle pulse glow for buttons */
+@keyframes softPulseGlow {
+  0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); border-color: rgba(99, 102, 241, 0.5); }
+  70% { box-shadow: 0 0 0 8px rgba(99, 102, 241, 0); border-color: rgba(99, 102, 241, 1); }
+  100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); border-color: rgba(99, 102, 241, 0.5); }
+}
+
+.btn-hover-glow {
+  transition: all 0.3s ease;
+}
+.btn-hover-glow:hover {
+  animation: softPulseGlow 1.5s infinite;
+  transform: translateY(-2px);
+}
+
+/* Float animation for cards */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+  100% { transform: translateY(0px); }
+}
+
+.hover-float:hover {
+  animation: float 3s ease-in-out infinite;
 }

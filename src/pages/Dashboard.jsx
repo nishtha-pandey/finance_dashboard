@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { useFinance } from '../context/FinanceContext';
-import { ArrowUpRight, ArrowDownRight, DollarSign, LineChart as LineChartIcon } from 'lucide-react';
+import { formatCurrency } from '../utils/formatCurrency';
+import { ArrowUpRight, ArrowDownRight, DollarSign, LineChart as LineChartIcon, Loader2 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -11,6 +12,16 @@ const COLORS = ['#818cf8', '#34d399', '#fbbf24', '#f87171', '#a78bfa', '#f472b6'
 
 const Dashboard = () => {
   const { transactions } = useFinance();
+
+  // 4. Loading State
+  if (!transactions) {
+    return (
+      <div className="flex flex-col justify-center items-center h-[60vh] text-slate-500 gap-4 animate-in fade-in duration-500">
+        <Loader2 size={48} className="animate-spin text-indigo-500" />
+        <p className="text-lg font-medium text-slate-400 tracking-wide">Loading dashboard data...</p>
+      </div>
+    );
+  }
 
   const { income, expenses, balance } = useMemo(() => {
     let inc = 0;
@@ -50,7 +61,7 @@ const Dashboard = () => {
     <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl flex items-center justify-between shadow-lg shadow-black/20 hover:shadow-indigo-500/5 transition-all duration-300 group">
       <div>
         <p className="text-sm font-medium text-slate-400 mb-1 tracking-wide">{title}</p>
-        <h3 className="text-3xl font-bold text-slate-50">${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h3>
+        <h3 className="text-3xl font-bold text-slate-50">{formatCurrency(amount)}</h3>
       </div>
       <div className={`p-4 rounded-2xl transition-transform group-hover:scale-110 ${
         type === 'income' ? 'bg-emerald-500/10 text-emerald-400' :
@@ -83,11 +94,11 @@ const Dashboard = () => {
               <LineChart data={trendData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
                 <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#64748b' }} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b' }} dx={-10} tickFormatter={(value) => `$${value}`} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b' }} dx={-10} tickFormatter={(value) => formatCurrency(value)} />
                 <Tooltip 
                   contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '12px', color: '#f8fafc', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.5)' }}
                   itemStyle={{ color: '#f8fafc' }}
-                  formatter={(value) => [`$${value}`, undefined]}
+                  formatter={(value) => [formatCurrency(value), undefined]}
                 />
                 <Legend wrapperStyle={{ paddingTop: '20px' }} />
                 <Line type="monotone" dataKey="income" name="Income" stroke="#34d399" strokeWidth={3} dot={{ r: 4, fill: '#34d399' }} activeDot={{ r: 6, stroke: '#0f172a', strokeWidth: 2 }} />
@@ -117,7 +128,7 @@ const Dashboard = () => {
                   ))}
                 </Pie>
                 <Tooltip 
-                  formatter={(value) => [`$${value}`, undefined]}
+                  formatter={(value) => [formatCurrency(value), undefined]}
                   contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '12px', color: '#f8fafc', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.5)' }}
                 />
                 <Legend layout="horizontal" verticalAlign="bottom" align="center" wrapperStyle={{ paddingTop: '20px' }} />

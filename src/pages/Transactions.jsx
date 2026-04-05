@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { useFinance } from '../context/FinanceContext';
+import { formatCurrency } from '../utils/formatCurrency';
 import { format, parseISO } from 'date-fns';
-import { Search, Plus, Trash2 } from 'lucide-react';
+import { Search, Plus, Trash2, Loader2 } from 'lucide-react';
 import { categories } from '../data/mockData';
 
 const Transactions = () => {
@@ -12,6 +13,16 @@ const Transactions = () => {
   const [showAddForm, setShowAddForm] = useState(false);
 
   const [newTx, setNewTx] = useState({ amount: '', category: categories[0], type: 'expense', date: new Date().toISOString().split('T')[0] });
+
+  // 4. Loading State
+  if (!transactions) {
+    return (
+      <div className="flex flex-col justify-center items-center h-[60vh] text-slate-500 gap-4 animate-in fade-in duration-500">
+        <Loader2 size={48} className="animate-spin text-indigo-500" />
+        <p className="text-lg font-medium text-slate-400 tracking-wide">Loading transactions...</p>
+      </div>
+    );
+  }
 
   const handleAdd = (e) => {
     e.preventDefault();
@@ -56,15 +67,19 @@ const Transactions = () => {
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-4">
         <h2 className="text-2xl font-bold text-slate-100 tracking-tight">Transactions</h2>
-        {role === 'Admin' && (
-          <button 
-            onClick={() => setShowAddForm(!showAddForm)}
-            className="flex items-center space-x-2 bg-indigo-600/90 text-white px-4 py-2.5 rounded-xl hover:bg-indigo-600 transition-colors shadow-lg shadow-indigo-600/20"
-          >
-            <Plus size={20} />
-            <span className="font-medium">Add Transaction</span>
-          </button>
-        )}
+        <button 
+          onClick={() => setShowAddForm(!showAddForm)}
+          disabled={role !== 'Admin'}
+          title={role !== 'Admin' ? "Only admin can add" : ""}
+          className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl transition-all shadow-lg ${
+            role === 'Admin' 
+              ? 'bg-indigo-600/90 text-white hover:bg-indigo-600 shadow-indigo-600/20 btn-hover-glow' 
+              : 'bg-slate-800 text-slate-600 cursor-not-allowed opacity-70 shadow-none'
+          }`}
+        >
+          <Plus size={20} />
+          <span className="font-medium">Add Transaction</span>
+        </button>
       </div>
 
       {showAddForm && role === 'Admin' && (
@@ -142,13 +157,13 @@ const Transactions = () => {
                 <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Category</th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Amount</th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Type</th>
-                {role === 'Admin' && <th className="px-6 py-4 text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">Actions</th>}
+                <th className="px-6 py-4 text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-slate-900 divide-y divide-slate-800/60">
               {filteredAndSorted.length > 0 ? (
-                filteredAndSorted.map((t) => (
-                  <tr key={t.id} className="hover:bg-slate-800/40 transition-colors group">
+                filteredAndSorted.map((t, index) => (
+                  <tr key={t.id} className="hover:bg-slate-800/40 transition-colors group animate-slide-up" style={{ animationDelay: `${index * 50}ms` }}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300">
                       {format(parseISO(t.date), 'MMM dd, yyyy')}
                     </td>
@@ -156,30 +171,39 @@ const Transactions = () => {
                       {t.category}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold">
-                      <span className={t.type === 'income' ? 'text-emerald-400' : 'text-slate-200'}>
-                        {t.type === 'income' ? '+' : '-'}${t.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      <span className={t.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}>
+                        {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount)}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       <span className={`px-3 py-1.5 inline-flex text-xs font-bold rounded-lg ${
-                        t.type === 'income' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-slate-800 text-slate-300 border border-slate-700'
+                        t.type === 'income' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
                       }`}>
                         {t.type.toUpperCase()}
                       </span>
                     </td>
-                    {role === 'Admin' && (
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <button onClick={() => deleteTransaction(t.id)} className="text-slate-500 hover:text-rose-400 p-2 rounded-lg transition-all hover:bg-rose-500/10 opacity-0 group-hover:opacity-100">
-                          <Trash2 size={18} />
-                        </button>
-                      </td>
-                    )}
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <button 
+                        onClick={() => deleteTransaction(t.id)} 
+                        disabled={role !== 'Admin'}
+                        title={role !== 'Admin' ? "Only admin can delete" : ""}
+                        className={`p-2 rounded-lg transition-all ${
+                          role === 'Admin'
+                            ? 'text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 opacity-0 group-hover:opacity-100'
+                            : 'text-slate-700 cursor-not-allowed opacity-50'
+                        }`}
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={role === 'Admin' ? 5 : 4} className="px-6 py-16 text-center text-slate-500 text-lg">
-                    No transactions found matching your criteria.
+                  <td colSpan={5} className="px-6 py-16 text-center text-slate-500 text-lg">
+                    {transactions.length === 0 
+                      ? "Add your first transaction" 
+                      : "No transactions found"}
                   </td>
                 </tr>
               )}
