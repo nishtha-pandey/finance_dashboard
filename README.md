@@ -1,16 +1,64 @@
-# React + Vite
+# Finance Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern and responsive Finance Dashboard built using React (Vite) that helps users track transactions, analyze insights, and manage financial data efficiently.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+##  Live Demo
+🔗 https://your-vercel-link-here
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+##  Features
 
-## Expanding the ESLint configuration
+-  Interactive Dashboard with key financial metrics
+-  Transaction Management (view, filter, categorize)
+-  Insights Page for data visualization and trends
+-  Role-Based Access Control (RBAC)
+-  Fully Responsive Design (mobile + desktop)
+-  Fast performance using Vite
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+##  Tech Stack
+
+- **Frontend**: React.js (Vite)
+- **Styling**: CSS / Tailwind (whichever you used)
+- **State Management**: Context API
+- **Routing**: React Router
+- **Version Control**: Git & GitHub
+- **Deployment**: Vercel
+
+---
+
+##  Architecture & Approach
+
+The application is structured with a focus on modularity and scalability:
+
+- **Components-based architecture** for reusability
+- **Context API** used for global state management
+- **Separate pages** for Dashboard, Transactions, and Insights
+- Utility functions placed inside `/utils` for cleaner logic separation
+
+---
+
+##  Role-Based Access Control (RBAC)
+
+- Different user roles can have different access levels
+- Certain pages/components are conditionally rendered based on role
+- Improves security and user experience
+
+---
+##  Screenshots
+
+### Overview (Dashboard)
+![Overview](./screenshots/Overview_page.png)
+
+### Admin - Transactions View
+![Admin Transactions](./screenshots/Admin_transaction.png)
+
+### Viewer - Transactions View
+![Viewer Transactions](./screenshots/Viewer_transaction.png)
+
+### Insights
+![Insights](./screenshots/Insights.png)
